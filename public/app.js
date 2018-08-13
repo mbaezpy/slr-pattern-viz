@@ -18,7 +18,7 @@ const tmpl = "<li class='{gold}'> " +
               "     <span class='badge badge-primary'>{nIn}</span> include{nMaybe}  <br> " + 
               "     <span class='badge badge-primary'>{nOut}</span> exclude </div> "+      
               " </div> <p></p> <p data-unit='{dataUnit}'><strong>Abstract</strong>. {abstract} </p>  " +
-              "<p><strong>Does the paper describe a study or experiment that inolves technology for online social interaction?</strong></p>" +
+              "<p><strong>Does the paper describe a study or experiment that inolves technology for online social interaction?</strong> <span class='badge badge-success'>{golden}</span></p>" +
               " <ul data-unit='{dataUnit}' class='reasons'>{reasons}</ul>" +
               " <div style='display:none' class='row patterns-block'> "+
               "   <div class='col-md bg-light'>" +      
@@ -88,10 +88,10 @@ $(document).ready(function () {
         var doShow = $(e.currentTarget).is(":checked")
 
         if(doShow){
-          $("#papers li").hide()
-          $("#papers li.golden").show()
+          $("#papers > li").hide()
+          $("#papers > li.golden").show()
         } else {
-          $("#papers li").show()
+          $("#papers > li").show()
         }
       })  
   
@@ -158,6 +158,7 @@ var UI= {
     
     var txt = tmpl.replace("{title}", juds[0].title)
                   .replace("{gold}", eval(juds[0]._golden.toLowerCase()) ? "golden" : "")   
+                  .replace("{golden}", eval(juds[0]._golden.toLowerCase()) ? "Golden: " + juds[0].in_out_radio_gold.toUpperCase() : "")   
                   .replace("{njuds}", juds.length)
                   .replace(/{dataUnit}/g, juds[0]._unit_id)
                   .replace("{abstract}", abstract)
