@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Highliter</title>
+    
+    <style>
+      .m-start {
+          padding-left: 5px;
+          cursor: pointer;
+      }     
+      .m-end {
+        padding-right: 5px;
+        margin-right: 2px;
+      }
+      
+      .m-start.selected .badge-dark {
+          background-color: cornflowerblue;
+      } 
+      
+      #papers  h5 > i {
+        display: none;
+      }
+      #papers .golden  h5 > i {
+        display: inline;
+      }
+      
+    </style>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+
+
+
+  </head>
+  <body>
+    <div class="container">
+    <h1>Crowd-provided exclusion patterns</h1>
+    
+      <p>In this page we illustrate the results from a crowdsourcing task run in Crowdflower, where we asked workers to classify abstracts as included / excluded based on a given inclusion criteria, and to provide us the exceprt from the abstract that informed their decision (the pattern). Below we illustrate the task description. </p>
+      
+      <img src="task.PNG" class="img-fluid">
+
+      <hr>
+      
+      
+      <h2> Results </h2> 
+      <p> We collected 2 (trusted) judgments for each of the 20 papers in our dataset. Those containing more judgments are the golden data (identified by the icon <i class='fas fa-star-of-life' style='color: #ff922b'></i>). Those who did not provided a valid pattern (with no match in the abstract) are considered invalid. Most of the invalid cases relate to patterns provided in Spanish.</p>
+      
+      <p>Below, the patterns are highlighted in the abstracts using the intensity of the marker to denote their popularity. Each pattern is tagged with the number of workers who provided it 
+        (<mark class="m-start" style="background: linear-gradient(to right, rgba(239, 137, 0, 1) , rgba(239, 239, 0, 1))">
+        <span class="badge badge-pill badge-dark">1</span></mark><mark style="background-color:rgba(239, 239, 0, 1)">Pattern</mark><mark class="m-end" style="background: linear-gradient(to right, rgba(239, 239, 0, 1), rgba(239, 137, 0, 1) )"></mark>. You can click on the counter at start of the pattern (<span class="badge badge-pill badge-dark">1</span>) to focus the list on the judgements provided by those workers who highlighted that pattern. </p>
+      
+      <div class="alert alert-warning" role="alert">
+        
+        <div class="form-check">
+          <strong>Filters</strong>
+          <label class="form-check-label col-md-3">
+            <input id="opt-show-golden" type="checkbox" value="">
+            Show only golden data
+          </label>
+          <label class="form-check-label col-md-3">
+            <input id="opt-show-invalid" type="checkbox" value="">
+            Show invalid patterns
+          </label>          
+        </div>
+      </div>
+      
+    <ol id="papers"></ol>
+    </div>
+   
+    <!-- Path to your app js-->
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+    
+    <script type="text/javascript" src="app.js"></script>
+  </body>
+</html>
