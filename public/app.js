@@ -157,7 +157,7 @@ var UI= {
     console.log(juds[0]._golden)
     
     var txt = tmpl.replace("{title}", juds[0].title)
-                  .replace("{gold}", eval(juds[0]._golden) ? "golden" : "")   
+                  .replace("{gold}", eval(juds[0]._golden.toLowerCase()) ? "golden" : "")   
                   .replace("{njuds}", juds.length)
                   .replace(/{dataUnit}/g, juds[0]._unit_id)
                   .replace("{abstract}", abstract)
