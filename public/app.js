@@ -54,9 +54,10 @@ $(document).ready(function () {
             judgments = []
           }
           
-          judgments.push(obj)                      
-          
+          judgments.push(obj)                                
         })
+        
+        UI.render(judgments)
       })
   
   
