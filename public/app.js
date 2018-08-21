@@ -230,6 +230,10 @@ var UI= {
 
         // Where in the words array would the pattern start?
         var iFrom = obj.abstract.substring(0, idx).trim().split(" ").length
+        // bug fix
+        if(idx === 0) {
+          iFrom = 0
+        }
         var iTo   = obj.abstract.substring(0, idx + pat.trim().length).trim().split(" ").length -1
 
 
