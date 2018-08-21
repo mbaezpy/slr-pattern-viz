@@ -17,10 +17,13 @@ app.get('/units', (req, res) => {
   csv()
   .fromStream(request.get(url))
   .subscribe((obj) => {
+
+    obj.reason_pattern = obj.reason_pattern.split(req.query.pattern_separator)
+
     list.push(obj)
   }, 
   (obj) => {
-    console.log("error")
+    console.log("error : " + obj)
   }, 
   (obj) => {
     res.json(list)

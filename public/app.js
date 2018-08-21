@@ -4,7 +4,7 @@
 * @author: Marcos Baez <baez@disi.unitn.it>
 */
 
-const MIN_PATTERN_LENGTH = 10
+var MIN_PATTERN_LENGTH = 10
 
 // No templating libraries, just plain html patters for this small experiment
 
@@ -30,17 +30,20 @@ const tmpl = "<li class='{gold}'> " +
               "</li>"
 
 
-const tmplReason = "<li data-pcore='{pcore}'><p><span class='badge badge-info'>{in_out_radio}</span> <span class='text-primary'>Reason:</span> {exl_crit}</p></li>"
+const tmplReason = "<li data-pcore='{pcore}' data-core-pos='{ppos}'><p><span class='badge badge-info'>{in_out_radio}</span> <span class='text-primary'>Reason:</span> {exl_crit}</p></li>"
 const tmplPattern = "<li><p><span class='badge'>{in_out_radio}</span>: {pattern}</p></li>"
 
 $(document).ready(function () {
       let searchParams = new URLSearchParams(window.location.search)
       var url = searchParams.get('url')
+      var sep = searchParams.get('pattern_separator')
+      MIN_PATTERN_LENGTH = searchParams.get('min_pattern') || 10 
+      
       if (! url) {
         alert("Specify the url to the CSV file containing the task results (?url=path)")
         return
       }
-      $.getJSON("/units?url="+url).done((units) => {
+      $.getJSON("/units?url=" + url + (sep? ("&pattern_separator=" + sep) : "")).done((units) => {
         
         var lastUnit = null;
         var judgments = [];
@@ -58,6 +61,8 @@ $(document).ready(function () {
         })
         
         UI.render(judgments)
+        
+        $("ul.reasons").children().hide().filter("[data-core-pos=0]").show() 
       })
   
   
@@ -76,7 +81,7 @@ $(document).ready(function () {
           $li.filter("[data-pcore=" + pcore + "]").toggle()
           $(e.currentTarget).toggleClass("selected")
         } else {
-          $li.show()
+          $li.hide().filter("[data-core-pos=0]").show()
           $(e.currentTarget).parent().children().filter("mark.m-start").removeClass("selected")                  
           
         }        
@@ -142,11 +147,21 @@ var UI= {
     
     var reasons = ""
     var invalids = ""
+    var lastWorkerId = null
+    var nValids = 0
     
     $(marks.validJuds).each((i, obj) => {
+      if (obj.jud._worker_id != lastWorkerId) {           
+        
+        lastWorkerId = obj.jud._worker_id
+        nValids++
+      }      
+      
       reasons+= tmplReason.replace("{exl_crit}", obj.jud.excl_crit)
                           .replace("{pcore}", obj.pos)
-                          .replace("{in_out_radio}", obj.jud.in_out_radio)
+                          .replace("{ppos}", obj.pos_core)
+                          .replace("{in_out_radio}", obj.jud.in_out_radio)          
+      
     })
     
     $(marks.invalidJuds).each((i, obj) => {
@@ -165,7 +180,7 @@ var UI= {
                   .replace("{abstract}", abstract)
                   .replace("{reasons}", reasons)
                   .replace("{invalids}", invalids)
-                  .replace("{njudsValid}", marks.valid)    
+                  .replace("{njudsValid}", nValids)    
                   .replace("{nIn}", marks.inScope.yes)  
                   .replace("{nOut}", marks.inScope.no)     
                   .replace("{nMaybe}", marks.inScope.maybe? " (+"+marks.inScope.maybe+" maybe)" : "")   
@@ -202,31 +217,38 @@ var UI= {
     var invalidJuds = []
     
     $(juds).each((i, obj) => {
-      var idx = obj.abstract.indexOf(obj.reason_pattern)
-      if (idx < 0 || (obj.reason_pattern.length < MIN_PATTERN_LENGTH)) {
-        invalidJuds.push({ jud : obj})
-        return
-      }
       
-      // Where in the words array would the pattern start?
-      var iFrom = obj.abstract.substring(0, idx).trim().split(" ").length
-      var iTo   = obj.abstract.substring(0, idx + obj.reason_pattern.length).trim().split(" ").length -1
-    
+      $(obj.reason_pattern).each((j, pat) => {
+        
+        if (pat.trim().length == 0) return true // we skip this emply pattern
       
-      for(var i=iFrom; i<=iTo; i++){  
-          paint[i].mark++
-      } 
-      paint[iFrom].start++
-      paint[iTo].end++
-      
-      inScope[obj.in_out_radio]++
-      
-      validJuds.push({
-        pos : iFrom,
-        jud : obj
+        var idx = obj.abstract.toLowerCase().indexOf(pat.trim().toLocaleLowerCase())
+        if (idx < 0 || (pat.length < MIN_PATTERN_LENGTH)) {
+          invalidJuds.push({ jud : obj})
+          return false // we skip this obj all together
+        }
+
+        // Where in the words array would the pattern start?
+        var iFrom = obj.abstract.substring(0, idx).trim().split(" ").length
+        var iTo   = obj.abstract.substring(0, idx + pat.trim().length).trim().split(" ").length -1
+
+
+        for(var i=iFrom; i<=iTo; i++){  
+            paint[i].mark++
+        } 
+        paint[iFrom].start++
+        paint[iTo].end++        
+
+        validJuds.push({
+          pos : iFrom,
+          jud : obj,
+          pos_core : j
+        })
+
+        valid++
       })
       
-      valid++
+      inScope[obj.in_out_radio]++      
 
     })
   
