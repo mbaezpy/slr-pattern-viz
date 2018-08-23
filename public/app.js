@@ -218,6 +218,7 @@ var UI= {
     
     $(juds).each((i, obj) => {
       
+      var isJudValid = false
       $(obj.reason_pattern).each((j, pat) => {
         
         if (pat.trim().length == 0) return true // we skip this emply pattern
@@ -225,6 +226,7 @@ var UI= {
         var idx = obj.abstract.toLowerCase().indexOf(pat.trim().toLocaleLowerCase())
         if (idx < 0 || (pat.length < MIN_PATTERN_LENGTH)) {
           invalidJuds.push({ jud : obj})
+          isJudValid = false
           return false // we skip this obj all together
         }
 
@@ -250,9 +252,12 @@ var UI= {
         })
 
         valid++
+        isJudValid = true
       })
       
-      inScope[obj.in_out_radio]++      
+      if (isJudValid) {
+        inScope[obj.in_out_radio]++ 
+      }
 
     })
   
