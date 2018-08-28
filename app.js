@@ -18,7 +18,16 @@ app.get('/units', (req, res) => {
   .fromStream(request.get(url))
   .subscribe((obj) => {
 
-    obj.reason_pattern = obj.reason_pattern.split(req.query.pattern_separator)
+    if (req.query.pattern_separator == "json") {
+      var items = JSON.parse(obj.reason_pattern)
+      var patterns = []
+      for (var i= 0; i < items.length; i++){
+        patterns.push(items[i][1])
+      }
+      obj.reason_pattern = patterns
+    } else {
+      obj.reason_pattern = obj.reason_pattern.split(req.query.pattern_separator) 
+    }
 
     list.push(obj)
   }, 
